@@ -14,7 +14,7 @@ void changeBG(imagepath) async {
     var result =
         await Process.run('powershell', ['python pythonWinBG.py $imagepath']);
     if (result.exitCode != 0) {
-      print("wallpaper change command did NOT terminate correctly becase:");
+      print("wallpaper change command did NOT terminate correctly because:");
       print(result.stderr);
     }
   } else if (Platform.isLinux) {
