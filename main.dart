@@ -6,38 +6,25 @@ void main() {
 
   //linux file path sample
   //String imagepath = '//home/bryan/Downloads/background.jpg';
+  changeBG(imagepath);
+}
 
+void changeBG(imagepath) async {
   if (Platform.isWindows) {
-    String shell = 'powershell';
-    String command = 'python pythonWinBG.py';
-    changeBG(imagepath, shell, command);
+    var result =
+        await Process.run('powershell', ['python pythonWinBG.py $imagepath']);
+    if (result.exitCode != 0) {
+      print("wallpaper change command did NOT terminate correctly becase:");
+      print(result.stderr);
+    }
   } else if (Platform.isLinux) {
-    //Only Linux distros with bash shell and Gnome desktop manager e.g. Ubuntu
-    String shell = 'bash';
-    String command = 'gsetting set org.gnome.desktop.background picture-uri file://$imagepath';
-    changeBGLin(shell, command);
-  }
-}
+    String command =
+        'gsetting set org.gnome.desktop.background picture-uri file://$imagepath';
+    var result = await Process.run('bash', ['-c', command]);
+    if (result.exitCode != 0) {
+      print("wallpaper change command did NOT terminate correctly because:");
+      print(result.stderr);
 
-void changeBG(imagepath, shell, command) async {
-  //opens given shell and types into shell: command imagepath
-  var result = await Process.run(shell, [command, imagepath]);
-
-    if (result.exitCode == 0) {
-    print('Background changed successfully.');
-  } else {
-    print('Failed to change background: ${result.stderr}');
-  }
-}
-
-//trying to make an universal function, but linux is being difficult
-void changeBGLin(shell, command) async {
-  //opens given shell and types into shell: command imagepath
-  var result = await Process.run(shell, ['-c', command]);
-
-  if (result.exitCode == 0) {
-    print('Background changed successfully.');
-  } else {
-    print('Failed to change background: ${result.stderr}');
+    }
   }
 }
